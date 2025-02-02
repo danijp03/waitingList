@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estado</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <ul>
+                <li><a href="https://www.gruposcoutclaret.com">Web GSC</a></li>
+                <li><a href="inscribir.html">Inscripción</a></li>
+                <li><a href="estado.html">Consultar Estado</a></li>
+                <li><a href="#quitar">Quitar de Lista de Espera</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h1>Consultar Estado</h1>
+        <div class="input-container">
+            <input type="email" id="email" placeholder="Introduce tu correo electrónico">
+            <input type="text" id="idSolicitud" placeholder="Introduce tu ID de solicitud">
+            <button class="entrar-btn" onclick="consultarSolicitudes()">Ver solicitudes</button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="cerrarModal()">&times;</span>
+            <div id="modalBody"></div>
+            <div class="modal-footer">
+                <button id="prevButton" class="nav-btn" onclick="anteriorSolicitud()">Anterior</button>
+                <button id="nextButton" class="nav-btn" onclick="siguienteSolicitud()">Siguiente</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let solicitudes = []; // Para almacenar todas las solicitudes
+        let currentIndex = 0; // Índice de la solicitud actual
+
+        function consultarSolicitudes() {
+            const email = document.getElementById("email").value;
+            const idSolicitud = document.getElementById("idSolicitud").value;
+
+            if (!email || !idSolicitud) {
+                alert("Por favor, introduce un correo electrónico válido y un ID de solicitud.");
+                return;
+            }
+
+            // Hacer la solicitud a la función de Firebase
+            fetch(`https://getsolicitudes-c2qom4v74a-uc.a.run.app?email=${email}`)
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data); // Añadimos el log para ver qué datos estamos recibiendo
+
+                    // Filtrar las solicitudes con el ID de solicitud proporcionado
+                    solicitudes = data.filter(solicitud => solicitud[solicitud.length - 1] === idSolicitud);
+
+                    // Si no hay solicitudes con ese ID, mostrar mensaje de error
+                    if (solicitudes.length === 0) {
+                        const modalBody = document.getElementById("modalBody");
+                        modalBody.innerHTML = "<p>No se encontraron solicitudes con ese ID para este correo.</p>";
+                        return;
+                    }
+
+                    currentIndex = 0; // Reiniciar el índice
+                    const modal = document.getElementById("modal");
+                    const modalBody = document.getElementById("modalBody");
+                    modal.style.display = "flex"; // Mostrar el modal
+
+                    mostrarSolicitud(currentIndex); // Mostrar la primera solicitud
+                })
+                .catch(error => {
+                    console.error("Error al recuperar los datos:", error);
+                    alert("Hubo un error al recuperar las solicitudes. Inténtalo nuevamente más tarde.");
+                });
+        }
+
+        function mostrarSolicitud(index) {
+            const modalBody = document.getElementById("modalBody");
+            const solicitud = solicitudes[index];
+
+            let contenido = `<h2>Solicitud #${index + 1}</h2>`;
+
+            // Nombres personalizados de los campos
+            const nombresCampos = [
+                'Fecha y hora solicitud',
+                'Nombre',
+                'Apellidos',
+                'Fecha de nacimiento',
+                'Colegio',
+                'Hermanos en el grupo',
+                'Madre',
+                'Padre',
+                'Antiguos en el grupo',
+                'Teléfono',
+                'Email',
+                'Unidad',
+                'Medio',
+                'NNEE',
+                'Id de'
+            ];
+
+            // Aquí cambiamos el for...in por un bucle tradicional para los índices
+            for (let i = 0; i < solicitud.length; i++) {
+                contenido += `
+                <p><strong>${nombresCampos[i] || 'Campo desconocido'}:</strong> ${solicitud[i] || 'No disponible'}</p>
+                `;
+            }
+
+            modalBody.innerHTML = contenido;
+            actualizarBotones();
+        }
+
+        function actualizarBotones() {
+            const prevButton = document.getElementById("prevButton");
+            const nextButton = document.getElementById("nextButton");
+
+            if (currentIndex === 0) {
+                prevButton.disabled = true; // Desactivar el botón de "Anterior" si estamos en el primer elemento
+            } else {
+                prevButton.disabled = false;
+            }
+
+            if (currentIndex === solicitudes.length - 1) {
+                nextButton.disabled = true; // Desactivar el botón de "Siguiente" si estamos en el último elemento
+            } else {
+                nextButton.disabled = false;
+            }
+        }
+
+        function siguienteSolicitud() {
+            if (currentIndex < solicitudes.length - 1) {
+                currentIndex++;
+                mostrarSolicitud(currentIndex);
+            }
+        }
+
+        function anteriorSolicitud() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                mostrarSolicitud(currentIndex);
+            }
+        }
+
+        function cerrarModal() {
+            const modal = document.getElementById("modal");
+            modal.style.display = "none"; // Cerrar el modal
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grupo Scout Claret</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            text-align: center;
+            overflow: hidden;
+            opacity: 1;
+            transition: opacity 1s ease-in-out;
+        }
+        .container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        h1 {
+            color: #003366;
+        }
+        .logo {
+            position: absolute;
+            width: 100px;
+            height: auto;
+        }
+        .entrar-btn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #003366;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .entrar-btn:hover {
+            background-color: #0055a5;
+        }
+        .fade-out {
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body id="body">
+    <div class="container" id="content">
+        <h1>¡Bienvenidos a la página de inscripción del Grupo Scout Claret!</h1>
+        <button class="entrar-btn" onclick="startTransition()">Entrar</button>
+        <img src="logo.png" alt="Logo Scout" class="logo" id="logo">
+    </div>
+
+    <script>
+        const logo = document.getElementById("logo");
+        let posX = 100, posY = 100;
+        let velX = 0.5, velY = 0.5;
+
+        function moveLogo() {
+            const maxX = window.innerWidth - logo.clientWidth;
+            const maxY = window.innerHeight - logo.clientHeight;
+
+            posX += velX;
+            posY += velY;
+
+            if (posX <= 0 || posX >= maxX) {
+                velX *= -1;
+            }
+            if (posY <= 0 || posY >= maxY) {
+                velY *= -1;
+            }
+
+            logo.style.left = posX + "px";
+            logo.style.top = posY + "px";
+        }
+
+        logo.style.position = "absolute";
+        setInterval(moveLogo, 10);
+
+        function startTransition() {
+            document.body.classList.add("fade-out");
+            setTimeout(() => {
+                window.location.href = "inscribir.html";
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
