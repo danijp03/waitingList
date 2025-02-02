@@ -55,7 +55,7 @@
 <body id="body">
     <div class="container" id="content">
         <h1>¡Bienvenidos a la página de inscripción del Grupo Scout Claret!</h1>
-        <button class="entrar-btn" onclick="startTransition()">Entrar</button>
+        <button class="entrar-btn" onclick="verificarContrasena()">Entrar</button>
         <img src="logo.png" alt="Logo Scout" class="logo" id="logo">
     </div>
 
@@ -84,6 +84,17 @@
 
         logo.style.position = "absolute";
         setInterval(moveLogo, 10);
+
+        function verificarContrasena() {
+            const contrasenaCorrecta = "Scout123"; // Cambia esta contraseña según tu necesidad
+            const inputContrasena = prompt("Introduce la contraseña:");
+
+            if (inputContrasena === contrasenaCorrecta) {
+                startTransition();
+            } else {
+                alert("Contraseña incorrecta. Inténtalo de nuevo.");
+            }
+        }
 
         function startTransition() {
             document.body.classList.add("fade-out");
